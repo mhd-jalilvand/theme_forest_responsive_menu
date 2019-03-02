@@ -2,7 +2,7 @@
 		<div class="container container-size-1">
 
 		<!-- AFTER LOGIN -->
-		<ul class="list-22 clearfix">
+		<ul style="display:none" class="list-22 clearfix">
 
 					<li>
 						<a href="https://www.vidopic.com/newest/" class="icon-wrapper">
@@ -444,19 +444,28 @@
 					 this.itrt = function(i,li,reset){
 							 if(reset){console.log(reset)
 								 this.h_counter = 1;
-							 }else  this.h_counter++;
+							 }else  ;
 							 let children = $(li).children();
 							 let $div = $('<DIV></DIV>');
 							 let $h = $('<'+headers[this.h_counter]
 							 							+'></'+headers[this.h_counter]+'>')
 
 							 if(children.length>0){
-								 $h.append(children[0])
+								 $h.append($(children[0]).clone())
 							 }
-							 for(var i=0;i<children.length;i++){
+							 if(children.length>1){
+									 children = $($(children[1]).find('ul:first')).children();
+									 if(children.length>0){
+									  this.h_counter++;
+									 for(var j=0;j<children.length;j++){
 
-		 						//this.itrt(i,children[i],false);
-		 					}
+									 	$div.append(this.itrt(i,children[j],false));
+										}
+										this.h_counter--;
+								 }
+							 }
+
+
 							return [$h,$div];
 	 					}
 						this.itrt.bind(this);

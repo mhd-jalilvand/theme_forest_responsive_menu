@@ -332,8 +332,9 @@
 									</ul>
 		</div>
 		<aside class="accordion">
-	<h1><span class="box-shadow-menu"></span></h1>
-	<div></div></aside>
+			<h1><span class="box-shadow-menu"></span></h1>
+			<div></div>
+		</aside>
 
 
 
@@ -441,19 +442,28 @@
 					 this.dest = $('aside.accordion >div')	;
 
 					 this.itrt = function(i,li,reset){
-						 if(reset){console.log(reset)
-							 this.h_counter = 1;
-						 }else  this.h_counter++;
-						 let children = $(li).children();
-						 for(var i=0;i<children.length;i++){
-	 						this.itrt(i,children[i],false);
+							 if(reset){console.log(reset)
+								 this.h_counter = 1;
+							 }else  this.h_counter++;
+							 let children = $(li).children();
+							 let $div = $('<DIV></DIV>');
+							 let $h = $('<'+headers[this.h_counter]
+							 							+'></'+headers[this.h_counter]+'>')
+
+							 if(children.length>0){
+								 $h.append(children[0])
+							 }
+							 for(var i=0;i<children.length;i++){
+
+		 						//this.itrt(i,children[i],false);
+		 					}
+							return [$h,$div];
 	 					}
-						 
-	 				}
-					this.itrt.bind(this);
-					for(var i=0;i<this.src.length;i++){
-						this.itrt(i,this.src[i],true);
-					}
+						this.itrt.bind(this);
+						for(var i=0;i<this.src.length;i++){
+							this.dest.append(this.itrt(i,this.src[i],true));
+							//console.log(a);
+						}
 						//this.src.each(function(i,li){console.log(this)});
 				}
 				const creator = new menu_factory();

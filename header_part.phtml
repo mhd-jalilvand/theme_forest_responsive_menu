@@ -1,0 +1,286 @@
+<?php
+
+$user = \User\User::getUserData();
+$avatar = NULL;
+
+try
+{
+	$avatar = \User\Helper\Avatar::getImage('small', $user);
+}
+catch(\Exception $e) {}
+?>
+
+<!-- HEADER // START -->
+
+<div class="container responsive-header event-header">
+	<?php $this->promo(); ?>
+	<div class="container container-padding-lr-5 bg-color-1 header-inside-1">
+	<div class="container container-size-1">
+	<header class="clearfix">
+		<p class="logo"><a href="<?php echo $this->url([],'welcome_home') ?>"><img src="<?php echo (\Base\Config::get('site_logo')) ? \Core\Http\Url::to('uploads/data/'.\Base\Config::get('site_logo')) : 'assets/images/logo.png' ?>" alt="<?php echo \Meta\Meta::getGlobal('title') ?>"></a></p>
+
+		<?php if(!$user || !$user->id): ?>
+		<!-- BEFORE LOGIN -->
+		<ul class="list-28">
+			<li><a class="button button-type-1 button-color-10 button-size-7 fill event-popup" href="<?php echo $this->url([ 'controller' => 'login' ], 'user_c', false, false) ?>?popup=true"><?php echo $this->_('Log In') ?></a></li>
+			<li><a class="button button-type-1 button-color-11 button-size-7 fill event-popup" href="<?php echo $this->url([ 'controller' => 'register' ], 'user_c') ?>?popup=true"><?php echo $this->_('Sign Up') ?></a></li>
+		</ul>
+		<?php endif; ?>
+		<!-- AFTER LOGIN -->
+
+		<?php if($user && $user->id): ?>
+		<ul class="list-23 clearfix">
+		<?php
+		// TOP MENU
+		$menu = \Base\Menu::getMenu('TopMenu');
+
+		foreach($menu as $row => $widget)
+		{
+			if($widget->is_widget)
+			{
+				$config = [];
+
+				if($widget->config)
+					$config = unserialize($widget->config);
+
+				$config['instance'] = $widget;
+				$config['is_group'] = $row ? $widget->is_group : FALSE;
+				if(!$widget->disabled(null, $config))
+					echo $this->widget($widget->widget, $config);
+			}
+			else if(!$widget->disabled(null, null))
+			{
+		?>
+				<li<?php echo ($row ? $widget->is_group : FALSE) ? ' class="group"' : '' ?>>
+					<?php $route = (array) unserialize($widget->route) ?>
+					<?php $class = $widget->id ?>
+					<a href="<?php echo $this->url($route + [ 'user_id' => $user->id,'query'=>$user->username ], $widget->widget) ?>" class="icon-usermenu-<?php echo $class;?>"><?php echo $this->_($widget->title);?></a>
+				</li>
+		<?php
+			}
+		}
+
+		// ADD MENU
+		$menu = \Base\PermissionMenu::getMenu('AddMenu');
+		?>
+
+		<?php if($menu): ?>
+		<li>
+			<a class="icon icon-type-15 icon-30" href="javascript:void(0)"><?php echo $this->_('Add') ?></a>
+			<div class="dropdown arrow-top-right">
+				<div class="dropdown-wrapper">
+					<div class="list-items-wrapper">
+						<ul>
+						<?php
+						foreach($menu AS $widget):
+							$config = [];
+
+							if($widget->config)
+								$config = unserialize($widget->config);
+
+							$popup = !isset($config['no-popup']) || !$config['no-popup'];
+
+							if($widget->is_widget):
+								$config['instance'] = $widget;
+								$config['is_group'] = $widget->is_group;
+								if(!$widget->disabled(null, $config)):
+									echo $this->widget($widget->widget, $config);
+								endif;
+							elseif(!$widget->disabled(null, null)):
+						?>
+								<li>
+									<a href="<?php echo $this->url((array) unserialize($widget->route), $widget->widget) ?>" class="icon-wrapper<?php echo $popup ? ' event-popup' : '' ?>">
+										<span class="icon icon-type-3 <?php echo $widget->icon ?>">Icon</span>
+										<span><?php echo $this->_($widget->title) ?></span>
+									</a>
+								</li>
+						<?php
+							endif;
+						endforeach;
+						?>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</li>
+		<?php endif ?>
+
+        <?php
+        //USER MENU
+        $menu = \Base\Menu::getMenu('UserTabs');
+        $tabs = [];
+
+        foreach($menu as $row => $widget)
+        {
+            if(!$widget->is_widget)
+                continue;
+
+            $config = [];
+
+            if($widget->config)
+                $config = unserialize($widget->config);
+
+            $config['instance'] = $widget;
+            $config['is_group'] = $row ? $widget->is_group : FALSE;
+            $config['title'] = $widget->title;
+
+            $widget = $this->widget($widget->widget, $config);
+
+            if(!$widget->is('Base\Widget\UserTabWidget'))
+                continue;
+
+            $tabs[] = $widget;
+        }
+        ?>
+		<li>
+			<a href="<?php echo $this->url([ 'user_id' => $user->id, 'query' => $this->urlQuery($user->username) ], 'user') ?>" class="member">
+				<?php if($avatar): ?>
+				<span class="avatar"><img src="<?php echo $avatar->image ?>" alt="<?php echo $this->_('Avatar') ?>" class="event-avatar-header"></span>
+				<?php endif ?>
+
+				<span class="info-bubble event-total-notifications">0</span>
+			</a>
+
+            <div class="dropdown arrow-top-right">
+                <div class="dropdown-wrapper profile-menu event-tabs">
+                    <ul class="list-31 padding-top-10 padding-bottom-10 event-btns">
+                        <?php foreach($tabs as $widget) echo $widget->tab() ?>
+                    </ul>
+
+                    <?php foreach($tabs as $idx => $widget) echo $widget->content() ?>
+                </div>
+            </div>
+		</li>
+		</ul>
+
+		<?php endif ?>
+
+		<ul class="list-38">
+		<?php echo $this->widget('page.widget.menu', ['position' => 'header']) ?>
+		</ul>
+	</header>
+	</div>
+	</div>
+
+	<div class="container container-padding-lr-5 bg-color-1 header-inside-2">
+		<div class="container container-size-1">
+		<?php
+		$menu = \Base\Menu::getMenu('FeatureMenu', NULL);
+		$tmp = [];
+		foreach($menu AS $m) {
+			if(!$m->disabled())
+				$tmp[] = $m;
+		}
+		if(count($tmp) == 1) {
+			$menu = \Base\Menu::getMenu('FeatureMenu', $tmp[0]->id);
+			foreach($menu AS &$m)
+				$m->hack = 1;
+		}
+		?>
+
+		<!-- AFTER LOGIN -->
+		<ul class="list-22 clearfix">
+			<?php foreach($menu AS $row => $widget): ?>
+				<?php if($widget->is_widget): ?>
+
+					<?php
+					$config = [];
+
+					if($widget->config)
+						$config = unserialize($widget->config);
+
+					$config['instance'] = $widget;
+					$config['is_group'] = $row ? $widget->is_group : false;
+					if(!$widget->disabled(null, $config))
+						echo $this->widget($widget->widget, $config);
+					?>
+
+				<?php elseif(!$widget->disabled(null, null)): ?>
+
+					<li <?php if($widget->active) { ?>class="active"<?php } ?>>
+						<a href="<?php echo ($widget->hack ? true : $widget->route) ? $this->url((array) @unserialize($widget->route), $widget->widget) : 'javascript:void(0)' ?>" class="icon-wrapper">
+							<span class="icon icon-type-3 <?php echo $widget->icon ?>">Icon</span>
+							<span><?php echo $this->_($widget->title) ?></span>
+						</a>
+
+						<?php
+						// SUB-FEATURE MENU
+						$submenu = \Base\Menu::getMenu('FeatureMenu', $widget->id);
+						?>
+
+						<?php if($submenu && count($submenu)): ?>
+
+							<div class="dropdown arrow-top-left">
+								<div class="dropdown-wrapper">
+									<div class="list-items-wrapper">
+										<ul>
+
+											<?php foreach($submenu AS $row => $widget): ?>
+												<?php if($widget->is_widget): ?>
+
+													<?php
+													$config = [];
+
+													if($widget->config)
+														$config = unserialize($widget->config);
+
+													$config['instance'] = $widget;
+													$config['is_group'] = $row ? $widget->is_group : false;
+													if(!$widget->disabled(null, $config))
+														echo $this->widget($widget->widget, $config);
+													?>
+
+												<?php elseif(!$widget->disabled(null, null)): ?>
+													<?php if($widget->active) { ?>
+														<?php ob_start();?>
+														$('.event-active-menu').parents('li').addClass('active');
+														<?php $this->getComponent('document')->addScript('active-menu', ob_get_clean());?>
+													<?php } ?>
+													<li <?php if($widget->active) { ?>class="active event-active-menu"<?php } ?>><a href="<?php echo $this->url((array) @unserialize($widget->route), $widget->widget) ?>"><?php echo $this->_($widget->title) ?></a></li>
+
+												<?php endif ?>
+											<?php endforeach ?>
+
+										</ul>
+									</div>
+								</div>
+							</div>
+
+						<?php endif ?>
+
+					</li>
+
+				<?php endif ?>
+			<?php endforeach ?>
+		</ul>
+		</div>
+		<?php include(dirname(__FILE__).'/header_part_jalil.phtml');?>
+
+	</div>
+</div>
+<!-- HEADER // END -->
+
+<?php
+//USER MENU
+$menu = \Base\Menu::getMenu('AfterHeader');
+$tabs = [];
+
+foreach($menu as $row => $widget)
+{
+	if(!$widget->is_widget)
+		continue;
+
+	$config = [];
+
+	if($widget->config)
+		$config = unserialize($widget->config);
+
+	$config['instance'] = $widget;
+	$config['is_group'] = $row ? $widget->is_group : FALSE;
+	$config['title'] = $widget->title;
+	if(!$widget->disabled(null, $config)) {
+		echo $this->widget($widget->widget, $config);
+		\Core\Registry::set('AfterHeader', true);
+	}
+}
+?>

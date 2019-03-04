@@ -1,7 +1,7 @@
-?php if(!isset($_GET['test1011'])) return;?>
+<?php if(!isset($_GET['test1011'])) return;?>
 
 		<aside class="accordion">
-			<h1><span class="box-shadow-menu"></span></h1>
+			<h1><span class="icon icon-type-3 icon-1 has-children"></span> <span class="has-children"> Items  menu </span></h1>
 			<div></div>
 		</aside>
 
@@ -33,6 +33,11 @@
   font-weight: normal;
   color: #cecece;
 }
+.accordion h1 >span.has-children {
+    color: #000;
+
+    padding-left: 10px;
+}
 .accordion h1:hover {
   color: #dfdfe0;
 }
@@ -49,7 +54,7 @@
   display: none;
 }
 .accordion h2 {
-  padding: 5px 25px;
+  padding: 5px 0 5px 25px;
   background-color: #f3f4f6;
   font-size: 1.1rem;
   color: #333;
@@ -58,7 +63,7 @@
   background-color: #dfdfe0;
 }
 .accordion h3 {
-  padding: 5px 30px;
+  padding: 5px 0 5px 30px;
   background-color: #fff;
   font-size: .9rem;
   color: #ddd;
@@ -67,7 +72,7 @@
   background-color: #34495e;
 }
 .accordion h4 {
-  padding: 5px 35px;
+  padding: 5px 0 5px 35px;
   background-color: #ffc25a;
   font-size: .9rem;
   color: #af720a;
@@ -87,21 +92,8 @@
   display: block;
 }
 
-.box-shadow-menu {
-  position: relative;
-  padding-left: 1.25em;
-}
-.box-shadow-menu:before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0.25em;
-  width: 1em;
-  height: 0.15em;
-  background: black;
-  box-shadow:
-    0 0.25em 0 0 black,
-    0 0.5em 0 0 black;
+.accordion a {
+	width: 100%;
 }
 </style>
 
@@ -123,11 +115,13 @@
 							 							+'></'+headers[this.h_counter]+'>')
 
 							 if(children.length>0){
+							     
 								 $h.append($(children[0]).clone())
 							 }
 							 if(children.length>1){
 									 children = $($(children[1]).find('ul:first')).children();
 									 if(children.length>0){
+									   $h.prepend($('<span class="icon icon-type-3 icon-46 has-children"></span>'));  
 									  this.h_counter++;
 									 for(var j=0;j<children.length;j++){
 
@@ -156,7 +150,10 @@
 $(".accordion").click(function(e) {
   var target = e.target,
       name = target.nodeName.toUpperCase();
-
+  if($(target).hasClass('has-children')){
+      target = target.parentNode;
+      name = target.nodeName.toUpperCase();
+  }    
   if($.inArray(name,headers) > -1) {
     var subItem = $(target).next();
 

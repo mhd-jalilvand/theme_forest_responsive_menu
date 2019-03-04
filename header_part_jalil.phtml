@@ -1,3 +1,4 @@
+?php if(!isset($_GET['test1011'])) return;?>
 
 		<aside class="accordion">
 			<h1><span class="box-shadow-menu"></span></h1>
@@ -5,17 +6,13 @@
 		</aside>
 
 
-
-
-
-
 <style>
 	aside.accordion{
-		display:none !important;
+		display:none;
 	}
 @media only screen and (max-width: 670px) {
 	.list-22{
-		display:none;
+		display:none !important;
 	}
 	aside.accordion{
 		display:block;
@@ -28,19 +25,16 @@
 .accordion h1, h2, h3, h4 {
   cursor: pointer;
 }
-.accordion h2, h3, h4 {
-  font-family: "News Cycle";
-}
+
 .accordion h1 {
   padding: 15px 20px;
-  background-color: #333;
-  font-family: Lobster;
-  font-size: 1.5rem;
+  background-color: #f3f4f6;
+  font-size: 1rem;
   font-weight: normal;
-  color: #1abc9c;
+  color: #cecece;
 }
 .accordion h1:hover {
-  color: #4afcdc;
+  color: #dfdfe0;
 }
 .accordion h1:first-child {
   border-radius: 10px 10px 0 0;
@@ -49,28 +43,28 @@
   border-radius: 0 0 10px 10px;
 }
 .accordion h1:not(:last-of-type) {
-  border-bottom: 1px dotted #1abc9c;
+  border-bottom: 1px dotted #dfdfe0;
 }
 .accordion div, .accordion p {
   display: none;
 }
 .accordion h2 {
   padding: 5px 25px;
-  background-color: #1abc9c;
+  background-color: #f3f4f6;
   font-size: 1.1rem;
   color: #333;
 }
 .accordion h2:hover {
-  background-color: #09ab8b;
+  background-color: #dfdfe0;
 }
 .accordion h3 {
   padding: 5px 30px;
-  background-color: #b94152;
+  background-color: #fff;
   font-size: .9rem;
   color: #ddd;
 }
 .accordion h3:hover {
-  background-color: #a93142;
+  background-color: #34495e;
 }
 .accordion h4 {
   padding: 5px 35px;
@@ -84,7 +78,7 @@
 .accordion p {
   padding: 15px 35px;
   background-color: #ddd;
-  font-family: "Georgia";
+  font-family: 'Open Sans', sans-serif;
   font-size: .8rem;
   color: #333;
   line-height: 1.3rem;
